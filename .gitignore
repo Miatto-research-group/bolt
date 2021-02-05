@@ -1,2 +1,5 @@
 python_x86/
 __pycache__/
+.python-version
+*.ipynb
+settings.json
