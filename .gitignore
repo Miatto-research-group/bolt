@@ -1,4 +1,4 @@
-python_x86/
+interf/
 __pycache__/
 .python-version
 *.ipynb
