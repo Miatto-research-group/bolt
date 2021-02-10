@@ -23,12 +23,14 @@ from states import Requirements
 req = Requirements({io:1.0})
 ```
 
-### 3. Find interferometer that best satisfies the requirement
+### 3. Find interferometer that best satisfies the requirements
 ```python
 from optimizer import Optimizer
+import matplotlib.pyplot as plt
 
 opt = Optimizer(lr = 0.01, max_steps=200)
 
 cov_matrix = opt(req)
+plt.plot(opt.losses)
 ```
 
