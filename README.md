@@ -8,17 +8,20 @@ This is a library that allows one to simulate and optimize interferometers at th
 ```python
 from states import State, IOSpec
 
+# State format {ket:amplitude, ket:amplitude, etc...}
 _in = State({(1,1,1,0,0,0):1.0})
 _out = State({(1,0,1,0,1,0):1.0})
 
+# IOSpec is an input-output relation (pure state in -> pure state out)
 io = IOSpec(input_state = _in, output_state = _out)
 ```
 
-### 2. Create a `Requirements` object
+### 2. Create a `Requirements` object for multiple input-output relations
 ```python
 from states import Requirements
 
-req = Requirements({io:1.0}) # format: {IOSpec:required probability}
+# format: {IOSpec:required probability, IOSpec:required probability, etc...}
+req = Requirements({io:1.0})
 ```
 
 ### 3. Find interferometer that best satisfies the requirement
