@@ -6,7 +6,7 @@ from numba import njit
 
 from .states import State, IOSpec, Requirements
 
-@njit
+@jit(cache=True, nopython=True)
 def L(lambdas):
     'returns the Lie algebra element in the lambda basis'
     n = int(np.sqrt(len(lambdas))) # there are n^2 lambdas
@@ -19,7 +19,7 @@ def L(lambdas):
             c += 1
     return L
 
-@njit
+@jit(cache=True, nopython=True)
 def dV_dlambdas(lambdas):
     'returns the gradient of the interferometer matrix with respect to the Lie algebra basis'
     n = int(np.sqrt(len(lambdas)))
