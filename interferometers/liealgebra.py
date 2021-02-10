@@ -2,7 +2,7 @@ from collections import defaultdict
 from itertools import combinations
 import numpy as np
 from typing import Tuple, Dict
-from numba import njit
+from numba import jit
 
 from .states import State, IOSpec, Requirements
 
