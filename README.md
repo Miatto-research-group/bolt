@@ -1,6 +1,6 @@
 # interferometers
 
-This is a library that allows one to simulate and optimize interferometers at the quantum level. 
+`interferometers` is a \*very fast\* library that allows one to simulate and optimize interferometers at the quantum level. 
 
 # How to use
 
@@ -28,7 +28,8 @@ req = Requirements({io:1.0})
 ```
 
 ### 3. Find interferometer that best satisfies the requirements
-Note that the first time the optimizer is called, the various `numba` functions in the code are compiled
+Note that the *first time* the optimizer is called, the various `numba` functions in the code are compiled.
+Subsequent calls will start immediately, until you restart the ipython kernel.
 ```python
 from interferometers import Optimizer
 opt = Optimizer(lr = 0.01)
@@ -38,4 +39,19 @@ print(f'The search took {opt.elapsed:.3f} seconds')
 
 import matplotlib.pyplot as plt
 plt.plot(opt.losses)
+```
+
+### 4. Did you blink?
+Let's increase the complexity (16 modes, 12 photons). Should still be reasonably fast (44 it/s on my laptop):
+```python
+from interferometers import State, IOSpec, Requirements, Optimizer
+
+_in = State({(1,1,3,1,2,0,0,0,0,0,0,3,0,0,1,0):1.0}) # |1,1,3,1,2,0,0,0,0,0,0,3,0,0,1,0>
+_out = State({(1,0,1,0,2,0,1,2,1,0,0,2,0,1,1,0):1.0}) # |1,0,1,0,2,0,1,2,1,0,0,2,0,1,1,0>
+
+io = IOSpec(input_state = _in, output_state = _out)
+req = Requirements({io:1.0})
+
+opt = Optimizer(lr = 0.02)
+cov_matrix = opt(req)
 ```
