@@ -48,7 +48,6 @@ def build(kbuild:Tuple[int], num_modes) -> Tuple[Tuple[int], Tuple[int], int]:
             prev_kbuild[i] += 1
 
 
-
 @jit(cache=True, nopython=True)
 def add_photon_to_output(kin:Tuple[int], koutplus1:int, i:int, V:np.array, U, dU, grad:bool): 
     """

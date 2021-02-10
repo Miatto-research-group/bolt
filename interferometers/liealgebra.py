@@ -2,9 +2,9 @@ from collections import defaultdict
 from itertools import combinations
 import numpy as np
 from typing import Tuple, Dict
-from states import State, IOSpec, Requirements
-
 from numba import njit
+
+from .states import State, IOSpec, Requirements
 
 @njit
 def L(lambdas):

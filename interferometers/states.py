@@ -2,7 +2,7 @@ from typing import Dict, Tuple
 from collections.abc import MutableMapping
 import numpy as np
 
-from utils import approx_tree_cost
+from .utils import approx_tree_cost
 
 class State(MutableMapping):
     """

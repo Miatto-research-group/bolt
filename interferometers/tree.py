@@ -8,9 +8,9 @@ from scipy.linalg import expm
 from numba.typed import Dict
 from numba.types import UniTuple, int64, complex128
 
-from states import IOSpec
-from utils import partition, remove, build, add_photon_to_output, add_photon_to_input
-from interferometers import L
+from .states import IOSpec
+from .utils import partition, remove, build, add_photon_to_output, add_photon_to_input
+from .liealgebra import L
 
 
 class Tree:

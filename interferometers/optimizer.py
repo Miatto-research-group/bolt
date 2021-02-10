@@ -1,12 +1,13 @@
 import time
 import numpy as np
-from tree import Tree
 from numpy_ml.neural_nets.optimizers import Adam
-from states import Requirements
 from tqdm import trange
-from scipy.linalg import expm
-# from expm import expm
-from interferometers import L, dV_dlambdas
+
+# from scipy.linalg import expm
+from .expm import expm
+from .tree import Tree
+from .liealgebra import L, dV_dlambdas
+from .states import Requirements
 
 class Optimizer:
     """
