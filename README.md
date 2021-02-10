@@ -7,7 +7,7 @@ This is a library that allows one to simulate and optimize interferometers at th
 ### 1. Create input and output states
 The `State` class is a dictionary of ket:amplitude pairs:
 ```python
-from states import State, IOSpec
+from interferometers import State, IOSpec
 
 _in = State({(1,1,1,0,0,0):1.0}) # |1,1,1,0,0,0>
 _out = State({(1,0,1,0,1,0):1.0}) # |1,0,1,0,1,0>
@@ -21,7 +21,7 @@ The `Requirements` class collects all of the required input-output relations tha
 Generally, an interferometer that satisfies all of the required relations does not exist, but the optimizer will try to find one
 that satisfies them the best.
 ```python
-from states import Requirements
+from interferometers import Requirements
 
 # format: {IOSpec:required probability, etc...}
 req = Requirements({io:1.0})
@@ -30,12 +30,12 @@ req = Requirements({io:1.0})
 ### 3. Find interferometer that best satisfies the requirements
 Note that the first time the optimizer is called, the various `numba` functions in the code are compiled
 ```python
-from optimizer import Optimizer
-import matplotlib.pyplot as plt
-
+from interferometers import Optimizer
 opt = Optimizer(lr = 0.01)
 
 cov_matrix = opt(req)
-print(f'The sarch took {opt.elapsed:.3f} seconds')
+print(f'The search took {opt.elapsed:.3f} seconds')
+
+import matplotlib.pyplot as plt
 plt.plot(opt.losses)
 ```
