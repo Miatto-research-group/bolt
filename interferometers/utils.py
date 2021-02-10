@@ -49,7 +49,7 @@ def build(kbuild:Tuple[int], num_modes) -> Tuple[Tuple[int], Tuple[int], int]:
 
 
 @jit(cache=True, nopython=True)
-def add_photon_to_output(kin:Tuple[int], koutplus1:int, i:int, V:np.array, U, dU, grad:bool): 
+def add_photon_to_output(kin:Tuple[int], koutplus1:int, i:int, V:np.array, U:NumbaDict, dU:NumbaDict, grad:bool): 
     """
     Implements the recurrence relation where we add a photon to the output
 
