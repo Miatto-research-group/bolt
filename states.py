@@ -8,6 +8,12 @@ class State(MutableMapping):
     """
     A dictionary that represents a pure quantum state.
     It stores ket:amplitude pairs and supports a `normalize()` method.
+    
+    Usage:
+    >>> state = State(mydict) # mydict is a dictionary with ket:amplitude pairs
+    or
+    >>> state = State()
+    >>> state[ket] = amplitude
     """
 
     def __init__(self, *args, **kwargs):
@@ -22,9 +28,6 @@ class State(MutableMapping):
 
     def __delitem__(self, key):
         del self.store[key]
-
-    # def __hash__(self):
-    #     return hash(self.store)
 
     def __iter__(self):
         return iter(self.store)
@@ -45,21 +48,25 @@ class IOSpec:
     """
     Input-output specification.
     Supports generating all Input/Output pairs and their amplitude
+    ---
+    Arguments:
+      input_state (State): input state
+      output_state (State): output state
     """
     def __init__(self, input_state:State, output_state:State):
         if len(set([sum(ket) for ket in input_state.keys()])) > 1:
-            raise ValueError("""The input state spans more than one multiplet.
+            raise ValueError(f"""The input state spans more than one multiplet (photons per ket are {[sum(ket) for ket in input_state.keys()]}).
         Solution: separate the required input-output relations per multiplet and submit them as different requirements.""")
         if len(set([sum(ket) for ket in output_state.keys()])) > 1:
-            raise ValueError("""The input state spans more than one multiplet.
+            raise ValueError(f"""The output state spans more than one multiplet (photons per ket are {[sum(ket) for ket in output_state.keys()]}).
         Solution: separate the required input-output relations per multiplet and submit them as different requirements.""")
         if sum(list(input_state.keys())[0]) != sum(list(output_state.keys())[0]):
-            raise ValueError("""This spec does not conserve photon number.
-        Solution: separate the required input-output relations per multiplet and submit them as different requirements.""")
+            raise ValueError(f"""This spec does not conserve photon number
+        (input photons = {sum(list(input_state.keys())[0])}, output photons = {sum(list(output_state.keys())[0])}).""")
         if len(set([len(ket) for ket in input_state.keys()])) > 1:
-            raise ValueError("not all input states span the same number of modes")
+            raise ValueError(f"not all input states span the same number of modes (modes = {[len(ket) for ket in input_state.keys()]})")
         if len(set([len(ket) for ket in output_state.keys()])) > 1:
-            raise ValueError("not all output states span the same number of modes")
+            raise ValueError(f"not all output states span the same number of modes (modes = {[len(ket) for ket in output_state.keys()]})")
         self.input = input_state
         self.output = output_state
         cost_of_building_input  = approx_tree_cost(build_patterns=list(self.input.keys()), scan_patterns=list(self.output.keys()))
@@ -85,12 +92,17 @@ class IOSpec:
 
 class Requirements:
     """
-    Summary of all the IO specifications for a given input state with corresponding probabilities
+    Collection of all the IO specifications for a given input state with corresponding weights.
+    ---
+    Arguments:
+      specs (dict): dictionary with IOSpec:weight pairs. Weights can be probabilities or just some floats.
+                    If weights are larger than 1.0, they make the KL divergence weigh more
+                    than the input-output spec in the loss function.
     """
 
     def __init__(self, specs:Dict[IOSpec,float]):
         if len(set([io.modes for io in specs.keys()])) > 1:
-            raise ValueError('not all input-output relations span the same number of modes')
+            raise ValueError(f'not all input-output relations span the same number of modes (modes = {[io.modes for io in specs.keys()]})')
         self.specs = specs 
 
     @property

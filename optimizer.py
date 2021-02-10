@@ -9,9 +9,19 @@ from scipy.linalg import expm
 from interferometers import L, dV_dlambdas
 
 class Optimizer:
-    def __init__(self, lr, epsilon=1e-5, max_steps=None):
+    """
+    Interferometer optimizer class. Create an instance by specifying:
+        lr (float): learning rate
+        epsilon (float): the optimization keeps going until the drop in loss is larger than epsilon
+        max_steps: (int): stop at max_steps if the epsilon criterion is not met yet
+
+        Usage:
+        >>> opt = Optimizer(lr=0.01, epsilon=1e-4)
+        >>> cov_matrix = opt(requirements)
+    """
+    def __init__(self, lr:float, epsilon:float = 1e-5, max_steps:int = 10000):
         self.epsilon = epsilon
-        self.max_steps = max_steps or 10000
+        self.max_steps = max_steps
         self.opt = Adam(lr=lr)
         self.losses = []
         self.elapsed = 0.0
@@ -21,6 +31,15 @@ class Optimizer:
 
     
     def __call__(self, req:Requirements):
+        """
+        The optimizer instance supports being called as a function on a Requirements object.
+        It records the list of losses (self.losses) and the elapsed time (self.elapsed).
+        
+        Arguments:
+            req (Requirements): requirements object
+        Returns:
+            covariance matrix
+        """
         tic = time.time()
         lambdas = np.random.normal(size=req.modes**2, scale=1)
         V = expm(L(lambdas))
