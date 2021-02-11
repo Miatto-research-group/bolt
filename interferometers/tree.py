@@ -32,10 +32,9 @@ class Tree:
     def reset(self, size):
         self.U = defaultdict(lambda: Dict.empty(key_type=UniTuple(int64, size), value_type=complex128))
         self.U[(0,)*size][(0,)*size] = 1.0 + 0.0j
-        self.dU = None
-        if self.grad:
-            self.dU = defaultdict(lambda: Dict.empty(key_type=UniTuple(int64, size), value_type=complex128[:,:]))
-            self.dU[(0,)*size][(0,)*size] = np.zeros_like(self.V, dtype=np.complex128)
+
+        self.dU = defaultdict(lambda: Dict.empty(key_type=UniTuple(int64, size), value_type=complex128[:,:]))
+        self.dU[(0,)*size][(0,)*size] = np.zeros_like(self.V, dtype=np.complex128)
 
     def add_photon(self, kbuild:Tuple[int], kscan:Tuple[int], building_input:bool):
         "builds the tree for a single final kbuild (input our) pattern"
