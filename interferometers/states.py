@@ -87,11 +87,11 @@ class IOSpec:
         if cost_of_building_input < cost_of_building_output:
             self.building_output = False
             self.building_input = True
-            self.paths = [(ket_in, ket_out, self.input[ket_in]*self.output[ket_out]) for ket_out in output_state for ket_in in input_state]
+            self.paths = [(ket_in, ket_out, self.input[ket_in]*np.conj(self.output[ket_out])) for ket_out in output_state for ket_in in input_state]
         else:
             self.building_output = True
             self.building_input = False
-            self.paths = [(ket_out, ket_in, self.input[ket_in]*self.output[ket_out]) for ket_out in output_state for ket_in in input_state]
+            self.paths = [(ket_out, ket_in, self.input[ket_in]*np.conj(self.output[ket_out])) for ket_out in output_state for ket_in in input_state]
 
     @property
     def photons(self):
