@@ -41,7 +41,20 @@ class State(MutableMapping):
             self.store[k] /= np.sqrt(norm)
 
     def __repr__(self):
-        return str(self.store)
+        strings = []
+        for ket,amp in self.store.items():
+            if np.real(amp) < 0:
+                sign = '- '
+                amp = -amp
+            else:
+                sign = '+ '
+            if np.isclose(amp, 1.0):
+                strings.append(sign + '|' + ','.join(map(str,ket)) + '> ')
+            else:
+                strings.append(sign + f'{amp:.4f}' + '|' + ','.join(map(str,ket)) + '> ')
+        if '+' in strings[0][0]:
+            strings[0] = strings[0][2:]
+        return ''.join(strings)
 
 
 class IOSpec:
@@ -88,6 +101,9 @@ class IOSpec:
     def modes(self):
         return len(list(self.input.keys())[0])
 
+    def __repr__(self):
+        return repr(self.input) + '  --->  ' + repr(self.output)
+
 
 
 class Requirements:
@@ -108,5 +124,12 @@ class Requirements:
     @property
     def modes(self):
         return list(self.specs.keys())[0].modes
+
+
+    def __repr__(self):
+        strings = []
+        for io,prob in self.specs.items():
+            strings.append(repr(io) + f'   weight = {prob:.4f}\n')
+        return ''.join(strings)
 
     
