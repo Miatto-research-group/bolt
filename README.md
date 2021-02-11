@@ -88,6 +88,7 @@ plt.plot(opt.losses);
 ```
 
 ### GHZ state generation
+Here we find out that we can generate a GHZ state with probability 1/2.
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
@@ -95,10 +96,10 @@ from bolt import State, IOSpec, Requirements, Optimizer
 
 in_111 = State({(1,1,1,0,0,0):1.0}) 
 
-GHZ = State({(1,0,1,0,1,0):np.sqrt(1/2), (0,1,0,1,0,1):np.sqrt(1/2)}) 
+out_GHZ = State({(1,0,1,0,1,0):np.sqrt(1/2), (0,1,0,1,0,1):np.sqrt(1/2)}) 
 
 
-io = IOSpec(input_state = in_111, output_state=GHZ)
+io = IOSpec(in_111, out_GHZ)
 req = Requirements({io:1.0})
 opt = Optimizer(lr = 0.01)
 cov_matrix = opt(req)
