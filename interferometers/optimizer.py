@@ -20,13 +20,14 @@ class Optimizer:
         >>> opt = Optimizer(lr=0.01, epsilon=1e-4)
         >>> cov_matrix = opt(requirements)
     """
-    def __init__(self, lr:float, epsilon:float = 1e-5, max_steps:int = 10000):
+    def __init__(self, lr:float, epsilon:float = 1e-5, max_steps:int = 10000, cov_matrix_init=None):
         self.epsilon = epsilon
         self.max_steps = max_steps
         self.opt = Adam(lr=lr)
         self.losses = []
         self.probs = []
         self.elapsed = 0.0
+        self.cov_matrix_init = cov_matrix_init
 
     @staticmethod
     def mse(x, y):
@@ -44,8 +45,11 @@ class Optimizer:
             covariance matrix
         """
         tic = time.time()
-        lambdas = np.random.normal(size=req.modes**2, scale=1)
-        V = expm(L(lambdas))
+        if self.cov_matrix_init:
+            V = self.cov_matrix_init
+        else:
+            lambdas = np.random.normal(size=req.modes**2, scale=0.01)
+            V = expm(L(lambdas))
         self.losses = [1e6]
         try:
             progress = trange(self.max_steps)
