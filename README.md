@@ -23,11 +23,11 @@ that satisfies them the best.
 ```python
 from interferometers import Requirements
 
-# format: {IOSpec:required probability, etc...}
+# format: {IOSpec:weight, etc...}
 req = Requirements({io:1.0})
 ```
 
-### 3. Find interferometer that best satisfies the requirements
+### 3. Find the interferometer that best satisfies the requirements
 Note that the *first time* the optimizer is called, the various `numba` functions in the code are compiled.
 Subsequent calls will start immediately, until you restart the ipython kernel.
 ```python
