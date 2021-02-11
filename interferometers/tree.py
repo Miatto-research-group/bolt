@@ -57,6 +57,9 @@ class Tree:
             U += amp * self.U[kbuild][kscan]
             if self.grad:
                 dU += amp * self.dU[kbuild][kscan]
-        return U, dU
+        if self.grad:
+            return U, dU
+        else:
+            return U
 
     
