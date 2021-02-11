@@ -20,7 +20,7 @@ class Optimizer:
         >>> opt = Optimizer(lr=0.01, epsilon=1e-4)
         >>> cov_matrix = opt(requirements)
     """
-    def __init__(self, lr:float, epsilon:float = 1e-5, max_steps:int = 10000, cov_matrix_init=None):
+    def __init__(self, lr:float, epsilon:float = 1e-5, max_steps:int = 1000, cov_matrix_init=None):
         self.epsilon = epsilon
         self.max_steps = max_steps
         self.opt = Adam(lr=lr)
