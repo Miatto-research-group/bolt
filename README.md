@@ -2,7 +2,7 @@
 
 `interferometers` is a \*very fast\* library that allows one to simulate and optimize interferometers at the quantum level. 
 
-# How to use
+## How to use
 
 ### 1. Create input and output states
 The `State` class is a dictionary of ket:amplitude pairs:
@@ -41,8 +41,8 @@ import matplotlib.pyplot as plt
 plt.plot(opt.losses)
 ```
 
-### 4. Did you blink?
-Let's increase the complexity (16 modes, 12 photons). Should still be reasonably fast (44 it/s on my laptop):
+## Did you blink?
+Let's increase the complexity (16 modes, 12 photons). It should still be reasonably fast (44 it/s on my laptop):
 ```python
 from interferometers import State, IOSpec, Requirements, Optimizer
 
@@ -55,3 +55,6 @@ req = Requirements({io:1.0})
 opt = Optimizer(lr = 0.02)
 cov_matrix = opt(req)
 ```
+
+## How is it that fast?
+`interferometers` does its magic by computing only the input-output amplitudes of the interferometer that are needed, rather than computing *all* of the amplitudes up to a given cutoff. Then, it performs the gradient optimization in the Lie algebra of the unitary group, which allows it to update the covariance matrix directly, without worrying about decomposing the interferometer in some arrangement of beam splitters.
