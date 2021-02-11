@@ -1,13 +1,13 @@
 from collections import defaultdict
 from itertools import combinations
 import numpy as np
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
 from numba import jit
 
 from .states import State, IOSpec, Requirements
 
 @jit(cache=True, nopython=True)
-def L(lambdas):
+def L(lambdas:np.array) -> np.array:
     'returns the Lie algebra element in the lambda basis'
     n = int(np.sqrt(len(lambdas))) # there are n^2 lambdas
     L = 1j*np.diag(lambdas[:n])
@@ -20,8 +20,8 @@ def L(lambdas):
     return L
 
 @jit(cache=True, nopython=True)
-def dV_dlambdas(lambdas):
-    'returns the gradient of the interferometer matrix with respect to the Lie algebra basis'
+def dV_dlambdas(lambdas:np.array) -> np.array:
+    'returns the gradient of the covariance matrix with respect to the Lie algebra basis'
     n = int(np.sqrt(len(lambdas)))
     Vs = []
     d,W = np.linalg.eigh(1j*L(lambdas))
