@@ -35,7 +35,7 @@ Note that the *first time* the optimizer is called, the various `numba` function
 Subsequent calls will start immediately, until you restart the ipython kernel.
 ```python
 from bolt import Optimizer
-opt = Optimizer(lr = 0.01)
+opt = Optimizer(lr = 0.01, max_steps=500)
 
 cov_matrix = opt(req)
 print(f'The search took {opt.elapsed:.3f} seconds')
@@ -60,8 +60,10 @@ cov_matrix = opt(req)
 ```
 
 ## Fun Experiments
+Note that at times the optimizer gets stuck in a local minimum. Run the optimization a few times to assess how often this happens.
 
 ### Bell state analyzer
+States from Eq. (2) in [PRA 94, 042331 (2011)](https://pdfs.semanticscholar.org/392a/3f99eb07c919da782831939082fa4eaac802.pdf).
 ```python
 import numpy as np
 from bolt import State, IOSpec, Requirements, Optimizer
@@ -77,7 +79,7 @@ io3 = IOSpec(phip, State({(2,0,0,0):1/2, (0,2,0,0):1/2, (0,0,2,0):1/2, (0,0,0,2)
 io4 = IOSpec(phim, State({(2,0,0,0):1/2, (0,0,2,0):1/2, (0,2,0,0):-1/2, (0,0,0,2):-1/2}))
 
 req = Requirements({io1:1.0, io2:1.0, io3:1.0, io4:1.0})
-opt = Optimizer(lr = 0.01, epsilon=1e-5)
+opt = Optimizer(lr = 0.01)
 cov_matrix = opt(req)
 print(f'The search took {opt.elapsed:.3f} seconds')
 
