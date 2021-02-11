@@ -3,7 +3,7 @@ import numpy as np
 from collections import defaultdict, Counter
 from itertools import combinations, product
 from typing import Tuple, Dict, List
-from scipy.linalg import expm
+from .expm import expm
 
 from numba.typed import Dict
 from numba.types import UniTuple, int64, complex128
@@ -37,7 +37,7 @@ class Tree:
         self.dU[(0,)*size][(0,)*size] = np.zeros_like(self.V, dtype=np.complex128)
 
     def add_photon(self, kbuild:Tuple[int], kscan:Tuple[int], building_input:bool):
-        "builds the tree for a single final kbuild (input our) pattern"
+        "extends the tree by adding a photon either to the input or to the output modes"
         for prev_kbuild, current_kbuild, mode in build(kbuild, self.num_modes):
             photons = sum(current_kbuild)
             for _kscan in partition(photons, kscan):
