@@ -5,10 +5,6 @@ from itertools import combinations, product
 from typing import Tuple, Dict, List
 from .expm import expm
 
-
-from joblib import Parallel, delayed
-import dill as pickle
-
 from numba.typed import Dict
 from numba.types import UniTuple, int64, complex128
 
