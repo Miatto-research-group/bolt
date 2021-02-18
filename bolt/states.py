@@ -65,8 +65,10 @@ class IOSpec:
     Arguments:
       input_state (State): input state
       output_state (State): output state
+      build (str): "input", "output" or None (default None). Force Tree to build input or output or let IOSpec optimize it automatically.
+                    For large inputs it may be slow at computing the optimal choice, and it could be intuitive which one is best.
     """
-    def __init__(self, input_state:State, output_state:State):
+    def __init__(self, input_state:State, output_state:State, build:str = None):
         if len(set([sum(ket) for ket in input_state.keys()])) > 1:
             raise ValueError(f"""The input state spans more than one multiplet (photons per ket are {[sum(ket) for ket in input_state.keys()]}).
         Solution: separate the required input-output relations per multiplet and submit them as different requirements.""")
@@ -82,17 +84,20 @@ class IOSpec:
             raise ValueError(f"not all output states span the same number of modes (modes = {[len(ket) for ket in output_state.keys()]})")
         self.input = input_state
         self.output = output_state
-        cost_of_building_input  = approx_tree_cost(build_patterns=list(self.input.keys()), scan_patterns=list(self.output.keys()))
-        cost_of_building_output = approx_tree_cost(build_patterns=list(self.output.keys()), scan_patterns=list(self.input.keys()))
-        if cost_of_building_input < cost_of_building_output:
+        if build is None:
+            cost_of_building_input  = approx_tree_cost(build_patterns=list(self.input.keys()), scan_patterns=list(self.output.keys()))
+            cost_of_building_output = approx_tree_cost(build_patterns=list(self.output.keys()), scan_patterns=list(self.input.keys()))
+        build = 'input' if cost_of_building_input < cost_of_building_output else 'output'
+        if 'input' == build.lower():
             self.building_output = False
             self.building_input = True
             self.paths = [(ket_in, ket_out, self.input[ket_in]*np.conj(self.output[ket_out])) for ket_out in output_state for ket_in in input_state]
-        else:
+        elif 'output' in build.lower():
             self.building_output = True
             self.building_input = False
             self.paths = [(ket_out, ket_in, self.input[ket_in]*np.conj(self.output[ket_out])) for ket_out in output_state for ket_in in input_state]
-
+        else:
+            raise ValueError('argument build can be "input", "output" or None')
     @property
     def photons(self):
         return sum(list(self.input.keys())[0])
