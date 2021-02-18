@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from numpy_ml.neural_nets.optimizers import Adam
+from numpy_ml.neural_nets.optimizers import Adam, SGD
 from tqdm import trange
 
 # from scipy.linalg import expm
@@ -20,14 +20,18 @@ class Optimizer:
         >>> opt = Optimizer(lr=0.01, epsilon=1e-4)
         >>> cov_matrix = opt(requirements)
     """
-    def __init__(self, lr:float, epsilon:float = 1e-5, max_steps:int = 1000, cov_matrix_init=None):
+    def __init__(self, lr:float, epsilon:float = 1e-5, max_steps:int = 1000, cov_matrix_init=None, natural:bool = False):
         self.epsilon = epsilon
         self.max_steps = max_steps
-        self.opt = Adam(lr=lr)
         self.losses = []
         self.probs = []
         self.elapsed = 0.0
         self.cov_matrix_init = cov_matrix_init
+        self.natural = natural
+        if self.natural:
+            self.opt = SGD(lr=lr)
+        else:
+            self.opt = Adam(lr=lr)
 
     @staticmethod
     def mse(x, y):
@@ -50,6 +54,9 @@ class Optimizer:
         else:
             lambdas = np.random.normal(size=req.modes**2, scale=0.01)
             V = expm(L(lambdas))
+        if self.natural:
+            A = np.block([[np.real(V), -np.imag(V)],[np.imag(V), np.real(V)]])
+
         self.losses = [1e6]
         try:
             progress = trange(self.max_steps)
@@ -63,12 +70,25 @@ class Optimizer:
                     p = abs(a)**2
                     self.probs.append(p)
                     dL_da = np.conj(a)*(p - prob) - prob**2/a
-                    da_dlambdas = np.sum(da_dV * dV_dlambdas(lambdas), axis=(1,2))
-                    grad_update += 2*np.real(dL_da * da_dlambdas)
+
+                    if self.natural:
+                        da_dA = np.block([[da_dV, -1j*da_dV],[1j*da_dV, da_dV]])
+                        grad_update += 2*np.real(dL_da * da_dA)
+                    else:
+                        da_dlambdas = np.sum(da_dV * dV_dlambdas(lambdas), axis=(1,2))
+                        grad_update += 2*np.real(dL_da * da_dlambdas)
+                    
                     loss += self.mse(p, prob) - prob*np.log(p/prob)
                 self.losses.append(loss)
-                lambdas = self.opt.update(lambdas, grad_update, None, None)
-                V = expm(L(lambdas))
+                if self.natural:
+                    Q = grad_update
+                    D = 0.5*(Q - A @ Q.T @ A) # natural gradient
+                    t = self.opt.hyperparameters['lr']
+                    A = A @ expm(t * D.T @ A) @ expm(t * (D.T @ A - A.T @ D))
+                    V = A[:len(V), :len(V)] + 1j*A[len(V):, :len(V)]
+                else:
+                    lambdas = self.opt.update(lambdas, grad_update, None, None)
+                    V = expm(L(lambdas))
                 P = ', '.join([f'{p:.4f}' for p in self.probs])
                 progress.set_description(f"{step}: probs = [{P}], loss = {loss:.4f}")
                 if abs(self.losses[-2] - self.losses[-1]) < self.epsilon:
