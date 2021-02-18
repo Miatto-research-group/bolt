@@ -3,7 +3,7 @@
 `bolt` is a \*very fast\* library that allows one to simulate and optimize interferometers at the quantum level. 
 
 ### How can it be that fast?
-`bolt` does its magic by computing only the input-output amplitudes of the interferometer that are needed, rather than computing *all* of the amplitudes up to a given Fock space cutoff. Then, it performs the gradient optimization in the Lie algebra of the unitary group, which allows it to update the covariance matrix directly, without worrying about decomposing the interferometer into some arrangement of beam splitters and phase shifters.
+`bolt` does its magic by computing only the input-output amplitudes of the interferometer that are needed, rather than computing *all* of the amplitudes up to a given Fock space cutoff. Then, it performs the gradient optimization in the Lie algebra of the unitary group, which allows it to update the covariance matrix directly, without worrying about decomposing the interferometer into some arrangement of beam splitters and phase shifters. It also (optionally) implements the natural gradient in the Orthogonal group, for an even faster convergence.
 
 ## How to use
 
@@ -106,4 +106,28 @@ cov_matrix = opt(req)
 
 print(f'The search took {opt.elapsed:.3f} seconds')
 plt.plot(opt.losses);
+```
+
+### GHZ state generation with natural gradient
+Let's push the limits with 11 photons and 22 modes, while using the natural gradient.
+Compare with the Lie Algebra implementation and notice the difference.
+Note that the natural gradient may be a bit sensible to the learning rate.
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from bolt import State, IOSpec, Requirements, Optimizer
+
+p = 11
+in_ = State({(1,)*p + (0,)*p:1.0}) 
+
+out_GHZ = State({(1,0)*p:np.sqrt(1/2), (0,1)*p:np.sqrt(1/2)}) 
+
+
+io = IOSpec(in_, out_GHZ)
+req = Requirements({io:1.0})
+opt = Optimizer(lr = 0.02, natural=True) # change to natural=False for Lie Algebra implementation
+cov_matrix = opt(req)
+
+print(f'The search took {opt.elapsed:.3f} seconds')
+plt.plot(opt.losses[1:]);
 ```
