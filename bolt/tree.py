@@ -48,22 +48,6 @@ class Tree:
                         U,dU = add_photon_to_output(_kscan, current_kbuild[mode], mode, self.V, self.U[prev_kbuild], self.dU[prev_kbuild], self.grad)
                     self.U[current_kbuild][_kscan] = U
                     if self.grad: self.dU[current_kbuild][_kscan] = dU
-    # def build_tree(self, kbuild:Tuple[int], kscan:Tuple[int], building_input:bool):
-    #     "builds the tree by adding photons either to the input or to the output modes"
-    #     _U = self.U.copy()
-    #     _dU = self.dU.copy()
-
-    #     for prev_kbuild, current_kbuild, mode in build_order(kbuild, self.num_modes):
-    #         photons = sum(current_kbuild)
-    #         for _kscan in partition(photons, kscan):
-    #             if _kscan not in self.U[current_kbuild]: # not in dU[current_kbuild] either
-    #                 if building_input:
-    #                     U,dU = add_photon_to_input(_kscan, current_kbuild[mode], mode, self.V, _U[prev_kbuild], _dU[prev_kbuild], self.grad)
-    #                 else:
-    #                     U,dU = add_photon_to_output(_kscan, current_kbuild[mode], mode, self.V, _U[prev_kbuild], _dU[prev_kbuild], self.grad)
-    #                 _U[current_kbuild][_kscan] = U
-    #                 if self.grad: _dU[current_kbuild][_kscan] = dU
-    #     return _U, _dU
 
     def step(self, tup):
         kbuild, kscan = tup
