@@ -84,7 +84,7 @@ class Optimizer:
                 if self.natural:
                     Q = grad_update
                     D = 0.5*(Q - A @ Q.T @ A) # natural gradient
-                    A = A @ expm(self.lr * D.T @ A) @ expm(self.lr * (D.T @ A - A.T @ D))
+                    A = A @ expm(self.lr * D.T @ A)
                     V = A[:len(V), :len(V)] + 1j*A[len(V):, :len(V)]
                 else:
                     lambdas = self.opt.update(lambdas, grad_update, None, None)
