@@ -3,7 +3,7 @@
 `bolt` is a \*very fast\* library that allows one to simulate and optimize interferometers at the quantum level. 
 
 ### How can it be so fast?
-`bolt` does its magic by computing only the input-output amplitudes of the interferometer that are needed, rather than computing the entire transformation tensor, (i.e. *all* of the amplitudes) up to a given Fock space cutoff `N`. 
+`bolt` does its magic by computing only the input-output amplitudes of the interferometer that are needed, rather than computing the entire transformation tensor up to a given Fock space cutoff `N` (i.e. *all* of the amplitudes). 
 
 Then, it performs the gradient optimization in the Lie algebra of the unitary group, which allows it to update the covariance matrix directly, without worrying about decomposing the interferometer into some arrangement of beam splitters and phase shifters.
 
