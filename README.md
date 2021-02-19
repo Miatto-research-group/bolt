@@ -26,7 +26,7 @@ io = IOSpec(input_state = _in, output_state = _out)
 #### 2. Create a `Requirements` object for multiple input-output relations
 The `Requirements` class collects all of the required input-output relations that we require from the interferometer.
 Generally, an interferometer that satisfies all of the required relations does not exist, but the optimizer will try to find one
-that satisfies them the best.
+that satisfies them with the highest probability.
 ```python
 from bolt import Requirements
 
