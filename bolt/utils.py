@@ -13,8 +13,8 @@ from numba import jit
 sqrt = np.sqrt(np.arange(100, dtype=np.complex64))
 
 @lru_cache
-def partition(photons:int, max_vals:Tuple[int]) -> Generator[Tuple[int], None, None]:
-    "a generator for all the ways of putting n photons into modes that have at most (n1, n2, etc.) photons each"
+def partition(photons:int, max_vals:Tuple[int]) -> List[Tuple[int]]:
+    "a list for all the ways of putting n photons into modes that have at most (n1, n2, etc.) photons each"
     return [comb for comb in product(*(range(min(photons, i) + 1) for i in max_vals)) if sum(comb)==photons]
 
 
