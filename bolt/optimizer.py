@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from numpy_ml.neural_nets.optimizers import Adam, SGD
+from numpy_ml.neural_nets.optimizers import Adam
 from tqdm import trange
 
 # from scipy.linalg import expm
@@ -20,7 +20,7 @@ class Optimizer:
         >>> opt = Optimizer(lr=0.01, epsilon=1e-4)
         >>> cov_matrix = opt(requirements)
     """
-    def __init__(self, lr:float, epsilon:float = 1e-5, max_steps:int = 1000, cov_matrix_init=None, natural:bool = False):
+    def __init__(self, lr:float, epsilon:float = 1e-6, max_steps:int = 1000, cov_matrix_init=None, natural:bool = False):
         self.epsilon = epsilon
         self.max_steps = max_steps
         self.losses = []
@@ -29,8 +29,9 @@ class Optimizer:
         self.cov_matrix_init = cov_matrix_init
         self.natural = natural
         if self.natural:
-            self.opt = SGD(lr=lr)
+            self.lr = lr
         else:
+            self.lr = lr
             self.opt = Adam(lr=lr)
 
     @staticmethod
@@ -83,8 +84,7 @@ class Optimizer:
                 if self.natural:
                     Q = grad_update
                     D = 0.5*(Q - A @ Q.T @ A) # natural gradient
-                    t = self.opt.hyperparameters['lr']
-                    A = A @ expm(t * D.T @ A) @ expm(t * (D.T @ A - A.T @ D))
+                    A = A @ expm(self.lr * D.T @ A)
                     V = A[:len(V), :len(V)] + 1j*A[len(V):, :len(V)]
                 else:
                     lambdas = self.opt.update(lambdas, grad_update, None, None)

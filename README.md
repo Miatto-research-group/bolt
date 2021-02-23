@@ -2,12 +2,16 @@
 
 `bolt` is a \*very fast\* library that allows one to simulate and optimize interferometers at the quantum level. 
 
-### How can it be that fast?
-`bolt` does its magic by computing only the input-output amplitudes of the interferometer that are needed, rather than computing *all* of the amplitudes up to a given Fock space cutoff. Then, it performs the gradient optimization in the Lie algebra of the unitary group, which allows it to update the covariance matrix directly, without worrying about decomposing the interferometer into some arrangement of beam splitters and phase shifters. It also (optionally) implements the natural gradient in the Orthogonal group, for an even faster convergence.
+### How can it be so fast?
+`bolt` does its magic by computing only the input-output amplitudes of the interferometer that are needed, rather than computing the entire transformation tensor up to a given Fock space cutoff `N` (i.e. *all* of the amplitudes). 
 
-## How to use
+Then, it performs the gradient optimization in the Lie algebra of the unitary group, which allows it to update the covariance matrix directly, without worrying about decomposing the interferometer into some arrangement of beam splitters and phase shifters.
 
-### 1. Create input and output states
+It also (optionally) implements the natural gradient in the Orthogonal group, for an even faster convergence.
+
+### How to use
+
+#### 1. Create input and output states
 The `State` class is a dictionary of ket:amplitude pairs:
 ```python
 from bolt import State, IOSpec
@@ -19,10 +23,10 @@ _out = State({(1,0,1,0,1,0):1.0}) # |1,0,1,0,1,0>
 io = IOSpec(input_state = _in, output_state = _out)
 ```
 
-### 2. Create a `Requirements` object for multiple input-output relations
+#### 2. Create a `Requirements` object for multiple input-output relations
 The `Requirements` class collects all of the required input-output relations that we require from the interferometer.
 Generally, an interferometer that satisfies all of the required relations does not exist, but the optimizer will try to find one
-that satisfies them the best.
+that satisfies them with the highest probability.
 ```python
 from bolt import Requirements
 
@@ -30,7 +34,7 @@ from bolt import Requirements
 req = Requirements({io:1.0})
 ```
 
-### 3. Find the interferometer that best satisfies the requirements
+#### 3. Find the interferometer that best satisfies the requirements
 Note that the *first time* the optimizer is called, the various `numba` functions in the code are compiled.
 Subsequent calls will start immediately, until you restart the ipython kernel.
 ```python
@@ -44,7 +48,7 @@ import matplotlib.pyplot as plt
 plt.plot(opt.losses)
 ```
 
-## Did you blink?
+### Did you blink?
 Let's increase the complexity (16 modes, 12 photons). It should still be reasonably fast (44 it/s on my laptop):
 ```python
 from bolt import State, IOSpec, Requirements, Optimizer
@@ -59,10 +63,10 @@ opt = Optimizer(lr = 0.02)
 cov_matrix = opt(req)
 ```
 
-## Fun Experiments
+### Fun Experiments
 Note that at times the optimizer gets stuck in a local minimum. Run the optimization a few times to assess how often this happens.
 
-### Bell state analyzer
+#### Bell state analyzer
 States from Eq. (2) in [PRA 94, 042331 (2011)](https://pdfs.semanticscholar.org/392a/3f99eb07c919da782831939082fa4eaac802.pdf).
 ```python
 import numpy as np
@@ -87,7 +91,7 @@ import matplotlib.pyplot as plt
 plt.plot(opt.losses);
 ```
 
-### GHZ state generation
+#### GHZ state generation
 Here we find out that we can generate a GHZ state with probability 1/2.
 ```python
 import numpy as np
@@ -108,7 +112,7 @@ print(f'The search took {opt.elapsed:.3f} seconds')
 plt.plot(opt.losses);
 ```
 
-### GHZ state generation with natural gradient
+#### GHZ state generation with natural gradient
 Let's push the limits with 11 photons and 22 modes, while using the natural gradient.
 Compare with the Lie Algebra implementation and notice the difference.
 Note that the natural gradient may be a bit sensible to the learning rate.

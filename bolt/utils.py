@@ -6,15 +6,14 @@ from functools import lru_cache
 
 from numba.typed import Dict as NumbaDict
 from numba.types import UniTuple, int64, complex128
-from numba.np.unsafe.ndarray import to_fixed_tuple
 from numba.cpython.unsafe.tuple import tuple_setitem
 from numba import jit
 
 sqrt = np.sqrt(np.arange(100, dtype=np.complex64))
 
 @lru_cache
-def partition(photons:int, max_vals:Tuple[int]) -> Generator[Tuple[int], None, None]:
-    "a generator for all the ways of putting n photons into modes that have at most (n1, n2, etc.) photons each"
+def partition(photons:int, max_vals:Tuple[int]) -> List[Tuple[int]]:
+    "a list for all the ways of putting n photons into modes that have at most (n1, n2, etc.) photons each"
     return [comb for comb in product(*(range(min(photons, i) + 1) for i in max_vals)) if sum(comb)==photons]
 
 

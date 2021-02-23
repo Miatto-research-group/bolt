@@ -6,3 +6,4 @@ settings.json
 .ipynb_checkpoints/
 .vscode/
 .pytest_cache/
+.venv/
