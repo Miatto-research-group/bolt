@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from numpy_ml.neural_nets.optimizers import Adam, SGD
+from numpy_ml.neural_nets.optimizers import Adam
 from tqdm import trange
 
 # from scipy.linalg import expm
