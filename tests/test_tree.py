@@ -1,8 +1,8 @@
 import pytest
 import strawberryfields as sf
 import numpy as np
-from tree import Tree
-from states import State, IOSpec
+from bolt.tree import Tree
+from bolt import State, IOSpec
 
 def test_amplitude_onephoton():
     test_prog = sf.Program(4) # 4 modes
@@ -152,7 +152,7 @@ def test_amplitude_2to2amplitudes():
     io = IOSpec(input_state=s_in, output_state=s_out)
     tree = Tree(io = io, covariance_matrix=U)
 
-    assert np.isclose(np.sqrt(1/7)*ket[2,0,1,1] - 1j*np.sqrt(6/7)*ket[4,0,0,0], tree.amplitude()[0])
+    assert np.isclose(np.sqrt(1/7)*ket[2,0,1,1] + 1j*np.sqrt(6/7)*ket[4,0,0,0], tree.amplitude()[0]) # note: complex conj
 
 
 

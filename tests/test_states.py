@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from states import State, IOSpec
+from bolt import State, IOSpec
 
 def test_state_normalization():
     state = State()
