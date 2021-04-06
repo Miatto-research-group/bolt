@@ -14,7 +14,13 @@ class Interferometer:
     """
     def __init__(self, cov_matrix):
         self.cov_matrix = cov_matrix
-
+        
+    def set_covmatrix(self, cov):
+        self.cov_matrix = cov
+        
+    def get_covmatrix(self):
+        return self.cov_matrix
+        
     def getalloutputs(self, inputstate:State):
         """
         Given a state input, you can get all possible outputs and its amplitudes.
