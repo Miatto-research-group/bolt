@@ -135,3 +135,24 @@ cov_matrix = opt(req)
 print(f'The search took {opt.elapsed:.3f} seconds')
 plt.plot(opt.losses[1:]);
 ```
+
+#### Get all possible outputs given a input state and a specfic interferometer
+Sometimes, you are not aiming to find out a optimized interferometer and you only want to find out with a setup interferometer, which state will appear on the output state and what is the probability of it. You can then try with this:
+
+```python
+from bolt import Interferometer
+from bolt import State,IOSpec
+import numpy as np
+
+#Alternative interferometer you can define as you wish
+S2 = 1/2*np.array([[1,1j,1j,-1],[1j,1,-1,1j],[1j,-1,1,1j],[-1,1j,1j,1]],dtype=np.complex128)
+
+#Alternative input state
+state_in = State({(2,0,0,2):np.sqrt(1/2),(0,2,2,0):np.sqrt(1/2)})
+
+#Define your Interferometer
+intf = Interferometer(S2)
+#Get your results!
+intf.getalloutputs(state_in)
+
+```
