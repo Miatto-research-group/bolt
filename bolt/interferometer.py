@@ -1,4 +1,3 @@
-import time
 import numpy as np
 from .tree import Tree
 from .states import State, IOSpec

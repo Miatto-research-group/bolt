@@ -141,7 +141,7 @@ Sometimes, you are not aiming to find out a optimized interferometer and you onl
 
 ```python
 from bolt import Interferometer
-from bolt import State,IOSpec
+from bolt import State
 import numpy as np
 
 #Alternative interferometer you can define as you wish
