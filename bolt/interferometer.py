@@ -36,10 +36,15 @@ class Interferometer:
         Solution: Please modify.""")
         list_possible_output = partition(num_photons,(num_modes,)*num_modes)
         alloutputs = {}
-        for i in range(len(list_possible_output)):
+        output = list_possible_output[0]
+        io = IOSpec(inputstate, State({output:1}))
+        t1 = Tree(io=io, covariance_matrix=S2, grad=True)
+        amp,dU = t1.amplitude()
+        alloutputs[output] = amp
+        for i in range(1,len(list_possible_output)):
             output = list_possible_output[i]
             io = IOSpec(inputstate, State({output:1}))
-            t1 = Tree(io=io, covariance_matrix=self.cov_matrix, grad=True)
+            t1.reset_io(io)
             amp,dU = t1.amplitude()
             alloutputs[output] = amp
         return alloutputs

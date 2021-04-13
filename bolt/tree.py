@@ -29,6 +29,9 @@ class Tree:
         self.grad = grad
         self.reset(self.num_modes)
         
+    def reset_io(self, io):
+        self.io = io
+        
     def reset(self, size):
         self.U = defaultdict(lambda: Dict.empty(key_type=UniTuple(int64, size), value_type=complex128))
         self.U[(0,)*size][(0,)*size] = 1.0 + 0.0j
@@ -65,5 +68,3 @@ class Tree:
             return U, dU
         else:
             return U
-
-    
