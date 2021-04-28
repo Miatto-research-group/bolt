@@ -63,6 +63,19 @@ opt = Optimizer(lr = 0.02)
 cov_matrix = opt(req)
 ```
 
+### All possible output amplitudes
+`Bolt` can generate the complete output state as well:
+```python
+from bolt.utils import all_outputs
+from scipy.stats import unitary_group
+from bolt import State
+
+state_in = State({(0,8,0,8):np.sqrt(1/4), (8,0,8,0):np.sqrt(1/4), (8,0,0,8):np.sqrt(1/4), (0,8,8,0):np.sqrt(1/4)})
+V = unitary_group.rvs(state_in.num_modes) # interferometer unitary
+
+out,_ = all_outputs(state_in, V, grad=False)
+```
+
 ### Fun Experiments
 Note that at times the optimizer gets stuck in a local minimum. Run the optimization a few times to assess how often this happens.
 
