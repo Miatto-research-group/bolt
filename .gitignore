@@ -7,3 +7,4 @@ settings.json
 .vscode/
 .pytest_cache/
 .venv/
+.DS_store
