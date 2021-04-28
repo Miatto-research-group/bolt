@@ -6,6 +6,7 @@ from functools import lru_cache
 
 from numba.typed import Dict as NumbaDict
 from numba.types import UniTuple, int64, complex128
+# from numba.np.unsafe.ndarray import to_fixed_tuple
 from numba.cpython.unsafe.tuple import tuple_setitem
 from numba import jit
 
