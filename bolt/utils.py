@@ -110,14 +110,23 @@ def all_outputs(state_in, V, grad=True):
     dU = defaultdict(lambda: NumbaDict.empty(key_type=UniTuple(int64, num_modes), value_type=complex128[:,:]))
     dU[(0,)*num_modes][(0,)*num_modes] = np.zeros_like(V, dtype=np.complex128)
 
-    for kin,amp in state_in.items():
+    for kin in state_in:
         for prev_kbuild, current_kbuild, mode in build_order(kin, num_modes):
             photons = sum(current_kbuild)
             for _kscan in partition(photons, (photons,)*num_modes):
                 if _kscan not in U[current_kbuild]:
                     u,du = add_photon_to_output(_kscan, current_kbuild[mode], mode, V, U[prev_kbuild], dU[prev_kbuild], grad)
-                    U[current_kbuild][_kscan] = u*amp
+                    U[current_kbuild][_kscan] = u
                     if grad:
-                        dU[current_kbuild][_kscan] = du*amp
-    return dict(U[kin]),dict(dU[kin])
+                        dU[current_kbuild][_kscan] = du
+    
+    out = defaultdict(complex)
+    dout = defaultdict(complex)
+
+    for kin,amp in state_in.items():
+        for kout in U[kin]:
+            out[kout] += amp*U[kin][kout]
+            dout[kout] += amp*dU[kin][kout]
+
+    return out, dout
     
