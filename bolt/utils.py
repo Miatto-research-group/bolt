@@ -1,7 +1,6 @@
 from typing import Tuple, List, Generator, Dict
 from itertools import product
 import numpy as np
-
 from functools import lru_cache
 
 from numba.typed import Dict as NumbaDict
@@ -102,3 +101,27 @@ def add_photon_to_input(kout:Tuple[int], kinplus1:Tuple[int], i:int, V:np.array,
             _dU[p,i] += sqrt[kout[p]]*U[kout_p]
         _dU /= sqrt[kinplus1]
     return _U, _dU
+
+
+from collections import defaultdict
+
+# def all_outputs(kin:Tuple[int,...], V, grad=True):
+def all_outputs(state_in, V, grad=True):
+    num_modes = state_in.num_modes
+
+    U = defaultdict(lambda: NumbaDict.empty(key_type=UniTuple(int64, num_modes), value_type=complex128))
+    U[(0,)*num_modes][(0,)*num_modes] = 1.0 + 0.0j
+    dU = defaultdict(lambda: NumbaDict.empty(key_type=UniTuple(int64, num_modes), value_type=complex128[:,:]))
+    dU[(0,)*num_modes][(0,)*num_modes] = np.zeros_like(V, dtype=np.complex128)
+
+    for kin,amp in state_in.items():
+        for prev_kbuild, current_kbuild, mode in build_order(kin, num_modes):
+            photons = sum(current_kbuild)
+            for _kscan in partition(photons, (photons,)*num_modes):
+                if _kscan not in U[current_kbuild]:
+                    u,du = add_photon_to_output(_kscan, current_kbuild[mode], mode, V, U[prev_kbuild], dU[prev_kbuild], grad)
+                    U[current_kbuild][_kscan] = u*amp
+                    if grad:
+                        dU[current_kbuild][_kscan] = du*amp
+    return dict(U[kin]),dict(dU[kin])
+    

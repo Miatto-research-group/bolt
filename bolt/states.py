@@ -1,7 +1,7 @@
 from typing import Dict, Tuple
 from collections.abc import MutableMapping
 import numpy as np
-
+import random
 from .utils import approx_tree_cost
 
 class State(MutableMapping):
@@ -39,6 +39,10 @@ class State(MutableMapping):
         norm = sum(abs(s)**2 for s in self.store.values())
         for k in self.store:
             self.store[k] /= np.sqrt(norm)
+    
+    @property
+    def num_modes(self):
+        return len(random.sample(self.store.keys(),1)[0])
 
     def __repr__(self):
         strings = []
