@@ -91,7 +91,7 @@ class IOSpec:
         if build is None:
             cost_of_building_input  = approx_tree_cost(build_patterns=list(self.input.keys()), scan_patterns=list(self.output.keys()))
             cost_of_building_output = approx_tree_cost(build_patterns=list(self.output.keys()), scan_patterns=list(self.input.keys()))
-        build = 'input' if cost_of_building_input < cost_of_building_output else 'output'
+            build = 'input' if cost_of_building_input < cost_of_building_output else 'output'
         if 'input' == build.lower():
             self.building_output = False
             self.building_input = True

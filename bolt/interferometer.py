@@ -44,8 +44,8 @@ class Interferometer:
         alloutputs[output] = amp
         for i in range(1,len(list_possible_output)):
             output = list_possible_output[i]
-            io = IOSpec(inputstate, State({output:1}))
+            io = IOSpec(inputstate, State({output:1}), build = 'input')
             t1.reset_io(io)
-            amp,dU = t1.amplitude()
+            amp,dU = t1.amplitude_for_reuse()
             alloutputs[output] = amp
         return alloutputs

@@ -68,3 +68,19 @@ class Tree:
             return U, dU
         else:
             return U
+            
+    def amplitude_for_reuse(self):
+    '''
+        The difference is here, we would like to build the full tree, not like the io, which has only one path from the input to output. So we choose a fix direction to build: from the lowest indice. And it corresponds to the build (attribute in IOSpec)='input'.
+    '''
+        U = 0
+        dU = np.zeros_like(self.V)
+        for kbuild,kscan,amp in self.io.paths: # TODO this i can parallelize debbrutto
+            self.build_tree(kbuild, kscan, False)
+            U += amp * self.U[kbuild][kscan]
+            if self.grad:
+                dU += amp * self.dU[kbuild][kscan]
+        if self.grad:
+            return U, dU
+        else:
+            return U
