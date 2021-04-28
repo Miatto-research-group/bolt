@@ -37,7 +37,7 @@ def remove(pattern:tuple) -> Tuple[int, Tuple[int]]:
     for p,n in enumerate(pattern):
         copy = pattern[:]
         if n > 0:
-            yield p, tuple_setitem(copy, p, pattern[p] - 1)
+            yield p, tuple_setitem(copy, p, pattern[p] - 1) # pylint: disable=no-value-for-parameter
 
 
 def build_order(kbuild:Tuple[int], num_modes) -> Tuple[Tuple[int], Tuple[int], int]:
