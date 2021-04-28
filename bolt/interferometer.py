@@ -31,14 +31,15 @@ class Interferometer:
         """
         num_photons = sum(list(inputstate.keys())[0])
         num_modes = len(list(inputstate.keys())[0])
-        if num_modes != len(self.cov_matrix):
-            raise ValueError(f"""The input state does not have the same number of modes as the given covariance matrix.
-        Solution: Please modify.""")
-        list_possible_output = partition(num_photons,(num_modes,)*num_modes)
+        
+#        if num_modes != len(self.cov_matrix):
+#            raise ValueError(f"""The input state does not have the same number of modes as the given covariance matrix.
+#        Solution: Please modify.""")
+        list_possible_output = partition(num_photons,(num_photons,)*num_modes)
         alloutputs = {}
         output = list_possible_output[0]
         io = IOSpec(inputstate, State({output:1}))
-        t1 = Tree(io=io, covariance_matrix=S2, grad=True)
+        t1 = Tree(io=io, covariance_matrix=self.cov_matrix, grad=True)
         amp,dU = t1.amplitude()
         alloutputs[output] = amp
         for i in range(1,len(list_possible_output)):
