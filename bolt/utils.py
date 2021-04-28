@@ -2,7 +2,7 @@ from typing import Tuple, List, Generator, Dict
 from itertools import product
 import numpy as np
 from functools import lru_cache
-
+from collections import defaultdict
 from numba.typed import Dict as NumbaDict
 from numba.types import UniTuple, int64, complex128
 # from numba.np.unsafe.ndarray import to_fixed_tuple
@@ -102,10 +102,6 @@ def add_photon_to_input(kout:Tuple[int], kinplus1:Tuple[int], i:int, V:np.array,
         _dU /= sqrt[kinplus1]
     return _U, _dU
 
-
-from collections import defaultdict
-
-# def all_outputs(kin:Tuple[int,...], V, grad=True):
 def all_outputs(state_in, V, grad=True):
     num_modes = state_in.num_modes
 
