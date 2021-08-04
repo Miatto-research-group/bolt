@@ -22,7 +22,7 @@ class PNRD_State_Discriminator:
         >>> opt = Optimizer(lr=0.01, epsilon=1e-4)
         >>> cov_matrix = opt(requirements)
     """
-    def __init__(self, lr:float, epsilon:float = 1e-6, max_steps:int = 1000, cov_matrix_init=None, natural:bool = False):
+    def __init__(self, lr:float, epsilon:float = 1e-6, max_steps:int = 1000, cov_matrix_init=None,com:bool=False,natural:bool=True):
         self.epsilon = epsilon
         self.max_steps = max_steps
         self.losses = []
@@ -30,6 +30,7 @@ class PNRD_State_Discriminator:
         self.elapsed = 0.0
         self.cov_matrix_init = cov_matrix_init
         self.natural = natural
+        self.com=com #defines if we need a covariant matrix or not
         if self.natural:
             self.lr = lr
         else:
@@ -66,7 +67,7 @@ class PNRD_State_Discriminator:
         size=st[0].num_modes**2
         states=partition(num_photons,(num_photons,)*num_modes)
         tic = time.time()
-        if self.cov_matrix_init:
+        if self.com:
             V = self.cov_matrix_init
         else:
             lambdas = np.random.normal(size=size, scale=0.01)
