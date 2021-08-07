@@ -15,8 +15,14 @@ sqrt = np.sqrt(np.arange(100, dtype=np.complex64))
 def partition(photons:int, max_vals:Tuple[int]) -> List[Tuple[int]]:
     "a list for all the ways of putting n photons into modes that have at most (n1, n2, etc.) photons each"
     return [comb for comb in product(*(range(min(photons, i) + 1) for i in max_vals)) if sum(comb)==photons]
-
-
+def pos(n:Tuple[int]): # returns position of the photons in a tuple, for e.g. (0,1,0,4), it will return 24 as 2nd and 4th mode has photons
+        m=list(n)
+        n=0
+        for i in range(len(m)):
+            if m[i]>0:
+                n+=(i+1)
+                n*=10
+        return n
 def depth_cost(scan_pattern:Tuple[int]) -> List[int]:
     """
     A list with the number of amplitudes we need to compute to reach each new level down the tree.
@@ -115,7 +121,7 @@ def all_outputs(state_in, V, grad=True):
             photons = sum(current_kbuild)
             for _kscan in partition(photons, (photons,)*num_modes):
                 if _kscan not in U[current_kbuild]:
-                    u,du = add_photon_to_output(_kscan, current_kbuild[mode], mode, V, U[prev_kbuild], dU[prev_kbuild], grad)
+                    u,du = add_photon_to_input(_kscan, current_kbuild[mode], mode, V, U[prev_kbuild], dU[prev_kbuild], grad)
                     U[current_kbuild][_kscan] = u
                     if grad:
                         dU[current_kbuild][_kscan] = du
@@ -127,6 +133,7 @@ def all_outputs(state_in, V, grad=True):
         for kout in U[kin]:
             out[kout] += amp*U[kin][kout]
             dout[kout] += amp*dU[kin][kout]
-
-    return out, dout
-    
+    if grad:
+        return out, dout
+    else:
+        return out

@@ -37,6 +37,7 @@ req = Requirements({io:1.0})
 #### 3. Find the interferometer that best satisfies the requirements
 Note that the *first time* the optimizer is called, the various `numba` functions in the code are compiled.
 Subsequent calls will start immediately, until you restart the ipython kernel.
+
 ```python
 from bolt import Optimizer
 opt = Optimizer(lr = 0.01, max_steps=500)
@@ -48,7 +49,58 @@ import matplotlib.pyplot as plt
 plt.plot(opt.losses)
 ```
 
+#### 3. Find the interferometer that best classifies an array of input states
+
+Takes an array of states as an Input and gives the output of the best possible unitary that classifies (distinguishes) these input states.
+
+A. Photon Number based Detection
+
+```python
+from bolt import State
+from bolt.PNRD import PNRD_State_Discriminator
+# 2 photons in 4 modes
+# dual rail encoding
+
+bs1 = State({(1,0,0,1):(1/2),(0,1,1,0):(1/2)})
+bs2 = State({(1,0,0,1):(1/2),(0,1,1,0):(-1/2)})
+bs3 = State({(1,0,1,0):(1/2),(0,1,0,1):(1/2)}) 
+bs4 = State({(1,0,1,0):(1/2),(0,1,0,1):(-1/2)})
+
+bell=[bs1,bs2,bs3,bs4]
+opt = PNRD_State_Discriminator(lr = 0.02,epsilon= 1e-6,max_steps=400)#lr- learning rate, epsilon- error
+cov_matrix = opt(bell)
+print(f'The search took {opt.elapsed:.3f} seconds')
+
+import matplotlib.pyplot as plt
+plt.plot(opt.losses);
+```
+
+B. Binary Detection
+
+```python
+from bolt import State
+from bolt.BPD import General_State_Discriminator # can also import BPD_parr, gives faster results for higher no of photons(>10)
+# 2 photons in 4 modes
+# dual rail encoding
+
+bs1 = State({(1,0,0,1):(1/2),(0,1,1,0):(1/2)})
+bs2 = State({(1,0,0,1):(1/2),(0,1,1,0):(-1/2)})
+bs3 = State({(1,0,1,0):(1/2),(0,1,0,1):(1/2)}) 
+bs4 = State({(1,0,1,0):(1/2),(0,1,0,1):(-1/2)})
+
+bell=[bs1,bs2,bs3,bs4]
+opt = General_State_Discriminator(lr = 0.02,epsilon= 1e-6,max_steps=400)#lr- learning rate, epsilon- error
+cov_matrix = opt(bell)
+print(f'The search took {opt.elapsed:.3f} seconds')
+
+import matplotlib.pyplot as plt
+plt.plot(opt.losses);
+```
+
+The General_State_Discriminator class has an additional function called `discrim_states(n,l)`where n is the no of photons and l is the number of modes. It returns a 2D array with each row having the states that are read identically in the BPD [like (0,1,0,3) and (0,2,0,2)], with the first element of each row being the representation of the readout [in this case, (0,1,0,1)]
+
 ### Did you blink?
+
 Let's increase the complexity (16 modes, 12 photons). It should still be reasonably fast (44 it/s on my laptop):
 ```python
 from bolt import State, IOSpec, Requirements, Optimizer
@@ -65,6 +117,7 @@ cov_matrix = opt(req)
 
 ### All possible output amplitudes
 `Bolt` can generate the complete output state as well:
+
 ```python
 from bolt.utils import all_outputs
 from scipy.stats import unitary_group
@@ -76,7 +129,10 @@ V = unitary_group.rvs(state_in.num_modes) # interferometer unitary
 out,_ = all_outputs(state_in, V, grad=False)
 ```
 
+Has an additional gradient function that can be used to return the gradient of the output states w.r.t the interferometer unitary. To use this, change the parameter to `grad=True`.
+
 ### Fun Experiments
+
 Note that at times the optimizer gets stuck in a local minimum. Run the optimization a few times to assess how often this happens.
 
 #### Bell state analyzer
